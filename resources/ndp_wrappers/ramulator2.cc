@@ -11,10 +11,11 @@ namespace NDPSim {
 
 
 void Ramulator2::init() {
+  cycle_count = 0;
   num_reads = 0;
   num_writes = 0;
   num_reqs = 0;
-  
+  std_name = "Channel_" + std::to_string(memory_id);
   YAML::Node config =
       Ramulator::Config::parse_config_file(config_path, {});
   ramulator2_frontend = Ramulator::Factory::create_frontend(config);
@@ -23,7 +24,7 @@ void Ramulator2::init() {
   ramulator2_memorysystem->connect_frontend(ramulator2_frontend);
 }
 
-bool Ramulator2::full(bool is_write) const {
+bool Ramulator2::full() const {
   return request_queue.size() >= 64;
 }
 
@@ -32,6 +33,7 @@ void Ramulator2::push(mem_fetch* mf) {
 }
 
 mem_fetch* Ramulator2::return_queue_top() const {
+  if(return_queue.empty()) return NULL;
   return return_queue.front();
 }
 
@@ -64,6 +66,15 @@ void Ramulator2::cycle() {
     request_queue.pop();
   }
   ramulator2_memorysystem->tick();
+  if(cycle_count % log_interval == 0) {
+    spdlog::info("{}: BW utilization {}% ({} reads, {} writes)",
+                std_name,
+                 (num_reads + num_writes) * 100 / (log_interval),
+                 num_reads, num_writes);
+    num_reads = 0;
+    num_writes = 0;
+  }
+  cycle_count++;
 }
 
 }  // namespace NDPSim

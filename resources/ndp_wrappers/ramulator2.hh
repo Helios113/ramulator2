@@ -7,6 +7,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <cstdint>
 // Forward declare Ramulator2 top-level components
 namespace Ramulator {
 class IFrontEnd;
@@ -21,7 +22,7 @@ class Ramulator2 {
   Ramulator2() {}
   Ramulator2(unsigned memory_id, unsigned num_channels,
              std::string ramulator_config, std::string out, int log_interval)
-      : std_name("ramulator2"),
+      : memory_id(memory_id), num_channels(num_channels),
         config_path(ramulator_config),
         log_interval(log_interval) {
     init();
@@ -30,7 +31,7 @@ class Ramulator2 {
     // Destructor implementation (if needed)
   }
   void init();
-  bool full(bool is_write) const;
+  bool full() const;
   void cycle();
   void finish();
   void print(FILE *fp = NULL);
@@ -55,7 +56,9 @@ class Ramulator2 {
   std::queue<mem_fetch *> return_queue;
   Ramulator::IFrontEnd *ramulator2_frontend;
   Ramulator::IMemorySystem *ramulator2_memorysystem;
-
+  int memory_id;
+  int num_channels;
+  uint64_t cycle_count = 0;
   int log_interval = 10000;
   int num_reqs;
   int num_reads;
