@@ -86,7 +86,7 @@ else()
 endif()
 ##################################
 
-include_directories(${CMAKE_SOURCE_DIR}/src)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 add_library(ramulator SHARED)
 set_target_properties(ramulator PROPERTIES

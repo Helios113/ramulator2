@@ -11,6 +11,10 @@ namespace NDPSim {
 
 
 void Ramulator2::init() {
+  num_reads = 0;
+  num_writes = 0;
+  num_reqs = 0;
+  
   YAML::Node config =
       Ramulator::Config::parse_config_file(config_path, {});
   ramulator2_frontend = Ramulator::Factory::create_frontend(config);

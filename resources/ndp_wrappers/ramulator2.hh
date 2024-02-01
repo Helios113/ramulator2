@@ -7,7 +7,6 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
-
 // Forward declare Ramulator2 top-level components
 namespace Ramulator {
 class IFrontEnd;
@@ -15,6 +14,8 @@ class IMemorySystem;
 }  // namespace Ramulator
 
 namespace NDPSim {
+class mem_fetch;
+
 class Ramulator2 {
  public:
   Ramulator2() {}
@@ -22,9 +23,7 @@ class Ramulator2 {
              std::string ramulator_config, std::string out, int log_interval)
       : std_name("ramulator2"),
         config_path(ramulator_config),
-        log_interval(log_interval),
-        num_reqs(0),
-        num_reads(0) {
+        log_interval(log_interval) {
     init();
   }
   ~Ramulator2() {
@@ -41,12 +40,12 @@ class Ramulator2 {
   void return_queue_push_back(mem_fetch *mf);
   bool returnq_full() const;
 
-  virtual bool is_active();
-  virtual void set_dram_power_stats(unsigned &cmd, unsigned &activity,
-                                    unsigned &nop, unsigned &actpre,
-                                    unsigned &pre2act, unsigned &rd,
-                                    unsigned &wr, unsigned &req,
-                                    unsigned &bytes) const;
+  // virtual bool is_active();
+  // virtual void set_dram_power_stats(unsigned &cmd, unsigned &activity,
+  //                                   unsigned &nop, unsigned &actpre,
+  //                                   unsigned &pre2act, unsigned &rd,
+  //                                   unsigned &wr, unsigned &req,
+  //                                   unsigned &bytes) const;
 
  private:
   bool is_gpu;
