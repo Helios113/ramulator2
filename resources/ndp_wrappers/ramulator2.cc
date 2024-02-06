@@ -46,6 +46,13 @@ mem_fetch* Ramulator2::return_queue_pop() {
 void Ramulator2::finish() {
   ramulator2_frontend->finalize();
   ramulator2_memorysystem->finalize();
+  if (cycle_count % log_interval == 0) {
+    spdlog::info("{}: avg BW utilization {}% ({} reads, {} writes)", std_name,
+                 (tot_reads + tot_writes) * 100 / (cycle_count), tot_reads,
+                 tot_writes);
+    num_reads = 0;
+    num_writes = 0;
+  }
 }
 
 void Ramulator2::cycle() {
@@ -55,15 +62,17 @@ void Ramulator2::cycle() {
       if (req.type_id == Ramulator::Request::Type::Read) {
         num_reads++;
         tot_reads++;
-      } else if (req.type_id == Ramulator::Request::Type::Write) {
+      } else {
         num_writes++;
         tot_writes++;
       }
+      mf->set_reply();
       return_queue.push(mf);
     };
-    ramulator2_frontend->receive_external_requests(
+    bool success = ramulator2_frontend->receive_external_requests(
         mf->is_write() ? 1 : 0, mf->get_ramulator_addr(), 0, callback);
-    request_queue.pop();
+    if(success)
+      request_queue.pop();
   }
   ramulator2_memorysystem->tick();
   if(cycle_count % log_interval == 0) {

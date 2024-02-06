@@ -121,6 +121,7 @@ class GenericDRAMController final : public IDRAMController, public Implementatio
             pending.push_back(*req_it);
           } else if (req_it->type_id == Request::Type::Write) {
             // TODO: Add code to update statistics
+            req_it->callback(*req_it);
           }
           buffer->remove(req_it);
         } else {
