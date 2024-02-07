@@ -113,8 +113,8 @@ class GenericDRAMController final : public IDRAMController, public Implementatio
       if (request_found) {
         if(req_it->is_first) {
           req_it->is_first = false;
-          bool row_hit = m_dram->check_rowbuffer_hit(req_it->command, req_it->addr_vec);
-          bool row_open = m_dram->check_rowbuffer_open(req_it->command, req_it->addr_vec);
+          bool row_hit = m_dram->check_rowbuffer_hit(req_it->final_command, req_it->addr_vec);
+          bool row_open = m_dram->check_rowbuffer_open(req_it->final_command, req_it->addr_vec);
           if (row_hit) {
             s_num_row_hits++;
           } else if (row_open) {
