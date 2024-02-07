@@ -208,7 +208,23 @@ struct DRAMNodeBase {
 
       // recursively check for row hits at my child
       return m_child_nodes[child_id]->check_rowbuffer_hit(command, addr_vec, m_clk);
-    };    
+    };
+
+    bool check_rowbuffer_open(int command, const AddrVec_t& addr_vec, Clk_t m_clk) {
+      int child_id = addr_vec[m_level+1];
+      if (m_spec->m_rowopens[m_level][command]) {
+        // stop recursion: there is a row open at this level
+        return m_spec->m_rowopens[m_level][command](static_cast<NodeType*>(this), command, child_id, m_clk);  
+      }
+
+      if (child_id < 0 || !m_child_nodes.size()) {
+        // stop recursion: there were no row opens at any level
+        return false; 
+      }
+
+      // recursively check for row opens at my child
+      return m_child_nodes[child_id]->check_rowbuffer_open(command, addr_vec, m_clk);
+    }    
 };
 
 template<class T>

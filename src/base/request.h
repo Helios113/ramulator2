@@ -25,6 +25,7 @@ struct Request {
   int type_id = -1;    // An identifier for the type of the request
   int source_id = -1;  // An identifier for where the request is coming from (e.g., which core)
 
+  bool is_first = true;      // Whether this is the first command of the request
   int command = -1;          // The command that need to be issued to progress the request
   int final_command = -1;    // The final command that is needed to finish the request
 

@@ -198,6 +198,11 @@ class DDR4VRR : public IDRAM, public Implementation {
       return m_channels[channel_id]->check_rowbuffer_hit(command, addr_vec, m_clk);
     };
 
+    bool check_rowbuffer_open(int command, const AddrVec_t& addr_vec) override {
+      int channel_id = addr_vec[m_levels["channel"]];
+      return m_channels[channel_id]->check_rowbuffer_open(command, addr_vec, m_clk);
+    };
+
   private:
     void set_organization() {
       // Channel width

@@ -98,6 +98,15 @@ class IDRAM : public Clocked<IDRAM> {
     virtual bool check_rowbuffer_hit(int command, const AddrVec_t& addr_vec) = 0;
 
     /**
+     * @brief     Checks whether the command will result in a rowbuffer open
+     * @details
+     * Given a command and its address, this function should return whether it will
+     * open a rowbuffer.
+     * 
+     */
+    virtual bool check_rowbuffer_open(int command, const AddrVec_t& addr_vec) = 0;
+
+    /**
      * @brief     An universal interface for the host to change DRAM configurations on the fly
      * @details
      * Provide a universal interface to let the host change the DRAM configurations on the fly (e.g., set refresh mode),
