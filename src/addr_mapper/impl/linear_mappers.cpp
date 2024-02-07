@@ -113,7 +113,7 @@ class M2NDP final : public LinearMapperBase, public Implementation {
     req.addr_vec[0] = slice_lower_bits(addr, m_addr_bits[0]);
     int c_lower_addr = slice_lower_bits(addr, c_lower);
     req.addr_vec[1] = slice_lower_bits(addr, m_addr_bits[1]);
-    req.addr_vec[c_index] = slice_lower_bits(addr, c_higher) << c_lower + c_lower_addr;
+    req.addr_vec[c_index] = (slice_lower_bits(addr, c_higher) << c_lower) + c_lower_addr;
     for (int i = 2; i <= m_row_bits_idx; i++) {
       req.addr_vec[i] = slice_lower_bits(addr, m_addr_bits[i]);
     }
