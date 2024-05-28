@@ -33,7 +33,7 @@ message("Configuring yaml-cpp...")
 option(YAML_CPP_BUILD_CONTRIB "Enable yaml-cpp contrib in library" OFF)
 option(YAML_CPP_BUILD_TOOLS "Enable parse tools" OFF)
 option(YAML_BUILD_SHARED_LIBS "Build yaml-cpp as a shared library" OFF)
-find_package(yaml-cpp)
+# find_package(yaml-cpp)
 if(NOT yaml-cpp_FOUND)
   FetchContent_Declare(
     yaml-cpp                             
@@ -47,7 +47,7 @@ if(NOT yaml-cpp_FOUND)
 endif()
 
 message("Configuring spdlog...")
-find_package(spdlog REQUIRED)
+# find_package(spdlog REQUIRED)
 if(NOT spdlog_FOUND)
   FetchContent_Declare(
     spdlog                             
@@ -68,7 +68,7 @@ endif()
 
 
 message("Configuring argparse...")
-find_package(argparse)
+# find_package(argparse)
   if(NOT argparse_FOUND)
   FetchContent_Declare(
       argparse
@@ -88,7 +88,15 @@ endif()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-add_library(ramulator SHARED)
+add_library(ramulator SHARED 
+resources/ndp_wrappers/ramulator2.cc
+resources/ndp_wrappers/ramulator2.hh)
+
+target_include_directories(ramulator 
+PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/resources/ndp_wrappers
+PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
+
 set_target_properties(ramulator PROPERTIES
   LIBRARY_OUTPUT_DIRECTORY  ${PROJECT_SOURCE_DIR}
 )
@@ -96,6 +104,7 @@ target_link_libraries(
   ramulator 
   PUBLIC yaml-cpp
   PUBLIC spdlog
+  PUBLIC ${CONAN_LIBS}
 )
 
 add_executable(ramulator-exe)

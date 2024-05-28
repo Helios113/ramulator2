@@ -5,7 +5,6 @@
 #include "base/request.h"
 #include "frontend/frontend.h"
 #include "memory_system/memory_system.h"
-#include "mem_fetch.h"
 
 namespace NDPSim {
 
@@ -46,13 +45,18 @@ mem_fetch* Ramulator2::return_queue_pop() {
 void Ramulator2::finish() {
   ramulator2_frontend->finalize();
   ramulator2_memorysystem->finalize();
-  if (cycle_count % log_interval == 0) {
+  if(memory_id == 0) {
     spdlog::info("{}: avg BW utilization {}% ({} reads, {} writes)", std_name,
-                 (tot_reads + tot_writes) * 100 / (cycle_count), tot_reads,
-                 tot_writes);
-    num_reads = 0;
-    num_writes = 0;
+                (tot_reads + tot_writes) * 100 / (cycle_count), tot_reads,
+                tot_writes);
   }
+  else {
+    spdlog::debug("{}: avg BW utilization {}% ({} reads, {} writes)", std_name,
+                (tot_reads + tot_writes) * 100 / (cycle_count), tot_reads,
+                tot_writes);
+  }
+  num_reads = 0;
+  num_writes = 0;
 }
 
 void Ramulator2::cycle() {
@@ -70,20 +74,30 @@ void Ramulator2::cycle() {
       return_queue.push(mf);
     };
     bool success = ramulator2_frontend->receive_external_requests(
-        mf->is_write() ? 1 : 0, mf->get_ramulator_addr(), 0, callback);
+        mf->is_write() ? 1 : 0, mf->addr, 0, callback);
     if(success)
       request_queue.pop();
   }
   ramulator2_memorysystem->tick();
   if(cycle_count % log_interval == 0) {
-    spdlog::info("{}: BW utilization {}% ({} reads, {} writes)",
-                std_name,
-                 (num_reads + num_writes) * 100 / (log_interval),
-                 num_reads, num_writes);
+    if(memory_id == 0)
+      spdlog::info("{}: BW utilization {}% ({} reads, {} writes)",
+                  std_name,
+                  (num_reads + num_writes) * 100 / (log_interval),
+                  num_reads, num_writes);
+    else
+      spdlog::debug("{}: BW utilization {}% ({} reads, {} writes)",
+                  std_name,
+                  (num_reads + num_writes) * 100 / (log_interval),
+                  num_reads, num_writes);
     num_reads = 0;
     num_writes = 0;
   }
   cycle_count++;
+}
+
+void Ramulator2::print(FILE* fp) {
+  finish();
 }
 
 }  // namespace NDPSim

@@ -15,7 +15,15 @@ class IMemorySystem;
 }  // namespace Ramulator
 
 namespace NDPSim {
-class mem_fetch;
+struct mem_fetch {
+  uint64_t addr;
+  bool write;
+  bool request;
+  void* origin_data;
+  int size;
+  void set_reply() { request = false; }
+  bool is_write() const { return write; }
+};
 
 class Ramulator2 {
  public:
