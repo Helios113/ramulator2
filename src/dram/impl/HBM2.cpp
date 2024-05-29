@@ -16,7 +16,8 @@ class HBM2 : public IDRAM, public Implementation {
 
     inline static const std::map<std::string, std::vector<int>> timing_presets = {
       //   name       rate   nBL  nCL  nRCDRD  nRCDWR  nRP  nRAS  nRC  nWR  nRTPS  nRTPL  nCWL  nCCDS  nCCDL  nRRDS  nRRDL  nWTRS  nWTRL  nRTW  nFAW  nRFC  nRFCSB  nREFI  nREFISB  nRREFD  tCK_ps
-      {"HBM2_2Gbps",  {2000,   2,   7,    7,      7,     7,   17,  19,   8,    2,     3,    2,    1,      2,     2,     3,     3,     4,    3,    15,   -1,   160,   3900,     -1,      8,   1000}},
+      {"HBM2_2Gbps",    {2000,   2,   7,    7,      7,     7,   17,  19,   8,    2,     3,    2,    1,      2,     2,     3,     3,     4,    3,    15,   -1,   160,   3900,     -1,      8,   1000}},
+      {"HBM2_2.5Gbps",  {2500,   3,   9,    9,      9,     9,   22,  24,  10,    3,     4,    3,    2,      3,     3,     4,     4,     5,    4,    19,   -1,   200,   4875,     -1,     10,    800}},
       // TODO: Find more sources on HBM2 timings...
     };
 
