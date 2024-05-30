@@ -14,6 +14,8 @@ void Ramulator2::init() {
   num_reads = 0;
   num_writes = 0;
   num_reqs = 0;
+  tot_reads = 0;
+  tot_writes = 0;
   std_name = "Channel_" + std::to_string(memory_id);
   YAML::Node config =
       Ramulator::Config::parse_config_file(config_path, {});

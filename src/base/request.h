@@ -41,11 +41,11 @@ struct Request {
 
 
 struct ReqBuffer {
-  std::list<Request> buffer;
-  size_t max_size = 64;
+  std::vector<Request> buffer;
+  size_t max_size = 256;
 
 
-  using iterator = std::list<Request>::iterator;
+  using iterator = std::vector<Request>::iterator;
   iterator begin() { return buffer.begin(); };
   iterator end() { return buffer.end(); };
 
