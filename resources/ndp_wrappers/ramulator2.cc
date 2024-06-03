@@ -26,7 +26,7 @@ void Ramulator2::init() {
 }
 
 bool Ramulator2::full() const {
-  return request_queue.size() >= 64;
+  return request_queue.size() >= 256;
 }
 
 void Ramulator2::push(mem_fetch* mf) {
