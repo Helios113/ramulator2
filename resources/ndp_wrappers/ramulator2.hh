@@ -29,11 +29,11 @@ class Ramulator2 {
  public:
   Ramulator2() {}
   Ramulator2(unsigned memory_id, unsigned num_channels,
-             std::string ramulator_config, std::string out, int log_interval)
+             std::string ramulator_config, std::string out, int log_interval, int nbl)
       : memory_id(memory_id), num_channels(num_channels),
         config_path(ramulator_config),
-        log_interval(log_interval) {
-    init();
+        log_interval(log_interval), nbl(nbl) {
+     init();
   }
   ~Ramulator2() {
     // Destructor implementation (if needed)
@@ -71,6 +71,7 @@ class Ramulator2 {
   int num_reqs;
   int num_reads;
   int num_writes;
+  int nbl;
   int tot_reqs;
   int tot_reads;
   int tot_writes;

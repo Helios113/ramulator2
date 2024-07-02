@@ -18,7 +18,8 @@ class LPDDR5 : public IDRAM, public Implementation {
 
     inline static const std::map<std::string, std::vector<int>> timing_presets = {
       //   name         rate   nBL  nCL  nRCD  nRPab  nRPpb   nRAS  nRC   nWR  nRTP nCWL nCCD nRRD nWTRS nWTRL nFAW  nPPD  nRFCab nRFCpb nREFI nPBR2PBR nPBR2ACT nCS,  tCK_ps
-      {"LPDDR5_6400",  {6400,  2,   20,   15,    17,   15,     34,   30,   28,   4,  11,   2,   4,   5,    10,   16,  2,   -1,      -1,   -1,   -1,        -1,    2,   1250}},
+      {"LPDDR5_6400",  {6400,  2,   20,   15,    17,   15,     34,   30,   28,   4,  11,   2,   4,   5,    10,   16,  2,   -1,      -1,   -1,   -1,        -1,    2,   1250}}
+      // {"LPDDR5X_8500",  {8500,  2,   20,   15,    17,   15,     34,   30,   28,   4,  11,   2,   4,   5,    10,   16,  2,   -1,      -1,   -1,   -1,        -1,    2,   1250}},
     };
 
 

@@ -16,13 +16,15 @@ void Ramulator2::init() {
   num_reqs = 0;
   tot_reads = 0;
   tot_writes = 0;
-  std_name = "Channel_" + std::to_string(memory_id);
   YAML::Node config =
       Ramulator::Config::parse_config_file(config_path, {});
   ramulator2_frontend = Ramulator::Factory::create_frontend(config);
   ramulator2_memorysystem = Ramulator::Factory::create_memory_system(config);
   ramulator2_frontend->connect_memory_system(ramulator2_memorysystem);
   ramulator2_memorysystem->connect_frontend(ramulator2_frontend);
+  const YAML::Node& ifce_config = config["MemorySystem"]["DRAM"];
+  std::string impl_name = ifce_config["impl"].as<std::string>("");
+  std_name = impl_name + "-CH_" + std::to_string(memory_id);
 }
 
 bool Ramulator2::full() const {
@@ -49,12 +51,12 @@ void Ramulator2::finish() {
   ramulator2_memorysystem->finalize();
   if(memory_id == 0) {
     spdlog::info("{}: avg BW utilization {}% ({} reads, {} writes)", std_name,
-                (tot_reads + tot_writes) * 100 / (cycle_count), tot_reads,
+                (tot_reads + tot_writes) * 100 * nbl / (cycle_count), tot_reads,
                 tot_writes);
   }
   else {
     spdlog::debug("{}: avg BW utilization {}% ({} reads, {} writes)", std_name,
-                (tot_reads + tot_writes) * 100 / (cycle_count), tot_reads,
+                (tot_reads + tot_writes) * 100 * nbl / (cycle_count), tot_reads,
                 tot_writes);
   }
   num_reads = 0;
@@ -85,12 +87,12 @@ void Ramulator2::cycle() {
     if(memory_id == 0)
       spdlog::info("{}: BW utilization {}% ({} reads, {} writes)",
                   std_name,
-                  (num_reads + num_writes) * 100 / (log_interval),
+                  (num_reads + num_writes) * 100 *nbl / (log_interval),
                   num_reads, num_writes);
     else
       spdlog::debug("{}: BW utilization {}% ({} reads, {} writes)",
                   std_name,
-                  (num_reads + num_writes) * 100 / (log_interval),
+                  (num_reads + num_writes) * 100 *nbl / (log_interval),
                   num_reads, num_writes);
     num_reads = 0;
     num_writes = 0;
