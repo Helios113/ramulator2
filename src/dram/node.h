@@ -141,7 +141,11 @@ struct DRAMNodeBase {
           // not enough history
           continue; 
         }
-
+        int diff = clk - past;
+        if(t.blocked_offset > 0 && !(diff >= t.blocked_offset && diff < t.val)) {
+          // not enough history
+          continue;
+        } 
         // update earliest schedulable time of every command
         Clk_t future = past + t.val;
         m_cmd_ready_clk[t.cmd] = std::max(m_cmd_ready_clk[t.cmd], future);

@@ -42,7 +42,7 @@ struct Request {
 
 struct ReqBuffer {
   std::vector<Request> buffer;
-  size_t max_size = 256;
+  size_t max_size = 64;
 
 
   using iterator = std::vector<Request>::iterator;

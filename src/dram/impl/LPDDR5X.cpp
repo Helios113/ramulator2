@@ -3,30 +3,29 @@
 
 namespace Ramulator {
 
-class LPDDR5 : public IDRAM, public Implementation {
-  RAMULATOR_REGISTER_IMPLEMENTATION(IDRAM, LPDDR5, "LPDDR5", "LPDDR5 Device Model")
+class LPDDR5X : public IDRAM, public Implementation {
+  RAMULATOR_REGISTER_IMPLEMENTATION(IDRAM, LPDDR5X, "LPDDR5X", "LPDDR5X Device Model")
 
   public:
     inline static const std::map<std::string, Organization> org_presets = {
       //   name           density   DQ   Ch Ra Bg Ba   Ro     Co
-      {"LPDDR5_2Gb_x16",  {2<<10,   16, {1, 1, 4, 4, 1<<13, 1<<10}}},
-      {"LPDDR5_4Gb_x16",  {4<<10,   16, {1, 1, 4, 4, 1<<14, 1<<10}}},
-      {"LPDDR5_8Gb_x16",  {8<<10,   16, {1, 1, 4, 4, 1<<15, 1<<10}}},
-      {"LPDDR5_16Gb_x16", {16<<10,  16, {1, 1, 4, 4, 1<<16, 1<<10}}},
-      {"LPDDR5_32Gb_x16", {32<<10,  16, {1, 1, 4, 4, 1<<17, 1<<10}}},
+      {"LPDDR5X_2Gb_x16",  {2<<10,   16, {1, 1, 4, 4, 1<<13, 1<<10}}},
+      {"LPDDR5X_4Gb_x16",  {4<<10,   16, {1, 1, 4, 4, 1<<14, 1<<10}}},
+      {"LPDDR5X_8Gb_x16",  {8<<10,   16, {1, 1, 4, 4, 1<<15, 1<<10}}},
+      {"LPDDR5X_16Gb_x16", {16<<10,  16, {1, 1, 4, 4, 1<<16, 1<<10}}},
+      {"LPDDR5X_32Gb_x16", {32<<10,  16, {1, 1, 4, 4, 1<<17, 1<<10}}},
     };
 
     inline static const std::map<std::string, std::vector<int>> timing_presets = {
-      //   name         rate   nBL  nCL  nRCD  nRPab  nRPpb   nRAS  nRC   nWR  nRTP nCWL nCCD nRRD nWTRS nWTRL nFAW  nPPD  nRFCab nRFCpb nREFI nPBR2PBR nPBR2ACT nCS,  tCK_ps
-      {"LPDDR5_6400",  {6400,  2,   20,   15,    17,   15,     34,   48,   28,   4,  11,   2,   4,   5,    10,   16,  2,   -1,      -1,   -1,   -1,        -1,    2,   1250}}
-      // {"LPDDR5X_8500",  {8500,  2,   20,   15,    17,   15,     34,   30,   28,   4,  11,   2,   4,   5,    10,   16,  2,   -1,      -1,   -1,   -1,        -1,    2,   1250}},
+      //   name         rate   nBL  nCL  nRCDW nRCDR,  nRPab  nRPpb   nRAS  nRC   nWR  nRTP nCWL nCCD nRRD nWTRS nWTRL nFAW  nPPD  nRFCab nRFCpb nREFI nPBR2PBR nPBR2ACT nCS,  tCK_ps
+      {"LPDDR5X_8533",  {8533,  2,   26,   9,    20,   32,     20,   45,   65,    37,   6,   12,   2,   4,    7,   13,  16,     2,  -1,      -1,   -1,   -1,        -1,    2,   938}},
     };
 
 
   /************************************************
    *                Organization
    ***********************************************/   
-    const int m_internal_prefetch_size = 8;
+    const int m_internal_prefetch_size = 32;
 
     inline static constexpr ImplDef m_levels = {
       "channel", "rank", "bankgroup", "bank", "row", "column",    
@@ -40,7 +39,7 @@ class LPDDR5 : public IDRAM, public Implementation {
       "ACT-1",  "ACT-2",
       "PRE",    "PREA",
       "CASRD",  "CASWR",   // WCK2CK Sync
-      "RD16",   "WR16",   "RD16A",   "WR16A",
+      "RD32",   "WR32",   "RD32A",   "WR32A",
       "REFab",  "REFpb",
       "RFMab",  "RFMpb",
     };
@@ -50,7 +49,7 @@ class LPDDR5 : public IDRAM, public Implementation {
         {"ACT-1", "row"},    {"ACT-2",  "row"},
         {"PRE",   "bank"},   {"PREA",   "rank"},
         {"CASRD", "rank"},   {"CASWR",  "rank"},
-        {"RD16",  "column"}, {"WR16",   "column"}, {"RD16A", "column"}, {"WR16A", "column"},
+        {"RD32",  "column"}, {"WR32",   "column"}, {"RD32A", "column"}, {"WR32A", "column"},
         {"REFab", "rank"},   {"REFpb",  "rank"},
         {"RFMab", "rank"},   {"RFMpb",  "rank"},
       }
@@ -65,10 +64,10 @@ class LPDDR5 : public IDRAM, public Implementation {
         {"PREA",   {false,  true,    false,   false}},
         {"CASRD",  {false,  false,   false,   false}},
         {"CASWR",  {false,  false,   false,   false}},
-        {"RD16",   {false,  false,   true,    false}},
-        {"WR16",   {false,  false,   true,    false}},
-        {"RD16A",  {false,  true,    true,    false}},
-        {"WR16A",  {false,  true,    true,    false}},
+        {"RD32",   {false,  false,   true,    false}},
+        {"WR32",   {false,  false,   true,    false}},
+        {"RD32A",  {false,  true,    true,    false}},
+        {"WR32A",  {false,  true,    true,    false}},
         {"REFab",  {false,  false,   false,   true }},
         {"REFpb",  {false,  false,   false,   true }},
         {"RFMab",  {false,  false,   false,   true }},
@@ -83,7 +82,7 @@ class LPDDR5 : public IDRAM, public Implementation {
 
     inline static const ImplLUT m_request_translations = LUT (
       m_requests, m_commands, {
-        {"read16", "RD16"}, {"write16", "WR16"}, 
+        {"read16", "RD32"}, {"write16", "WR32"}, 
         {"all-bank-refresh", "REFab"}, {"per-bank-refresh", "REFpb"},
       }
     );
@@ -94,7 +93,9 @@ class LPDDR5 : public IDRAM, public Implementation {
    ***********************************************/
     inline static constexpr ImplDef m_timings = {
       "rate", 
-      "nBL16", "nCL", "nRCD", "nRPab", "nRPpb", "nRAS", "nRC", "nWR", "nRTP", "nCWL",
+      "nBL32",
+      "nCL", "nRCDW", "nRCDR",
+      "nRPab", "nRPpb", "nRAS", "nRC", "nWR", "nRTP", "nCWL",
       "nCCD",
       "nRRD",
       "nWTRS", "nWTRL",
@@ -127,10 +128,10 @@ class LPDDR5 : public IDRAM, public Implementation {
     );
 
   public:
-    struct Node : public DRAMNodeBase<LPDDR5> {
+    struct Node : public DRAMNodeBase<LPDDR5X> {
       Clk_t m_final_synced_cycle = -1; // Extra CAS Sync command needed for RD/WR after this cycle
 
-      Node(LPDDR5* dram, Node* parent, int level, int id) : DRAMNodeBase<LPDDR5>(dram, parent, level, id) {};
+      Node(LPDDR5X* dram, Node* parent, int level, int id) : DRAMNodeBase<LPDDR5X>(dram, parent, level, id) {};
     };
     std::vector<Node*> m_channels;
     
@@ -187,7 +188,7 @@ class LPDDR5 : public IDRAM, public Implementation {
   private:
     void set_organization() {
       // Channel width
-      m_channel_width = param_group("org").param<int>("channel_width").default_val(32);
+      m_channel_width = param_group("org").param<int>("channel_width").default_val(16);
 
       // Organization
       m_organization.count.resize(m_levels.size(), -1);
@@ -337,7 +338,7 @@ class LPDDR5 : public IDRAM, public Implementation {
       }      
 
       // Set read latency
-      m_read_latency = m_timing_vals("nCL") + m_timing_vals("nBL16");
+      m_read_latency = m_timing_vals("nCL") + m_timing_vals("nBL32") * 3;
 
       // Populate the timing constraints
       #define V(timing) (m_timing_vals(timing))
@@ -345,23 +346,27 @@ class LPDDR5 : public IDRAM, public Implementation {
           /*** Channel ***/ 
           // CAS <-> CAS
           /// Data bus occupancy
-          {.level = "channel", .preceding = {"RD16", "RD16A"}, .following = {"RD16", "RD16A"}, .latency = V("nBL16")},
-          {.level = "channel", .preceding = {"WR16", "WR16A"}, .following = {"WR16", "WR16A"}, .latency = V("nBL16")},
-
+          {.level = "channel", .preceding = {"RD32", "RD32A"}, .following = {"RD32", "RD32A"}, .latency = V("nBL32")},
+          {.level = "channel", .preceding = {"WR32", "WR32A"}, .following = {"WR32", "WR32A"}, .latency = V("nBL32")},
+          // Interleaving burst
+          {.level = "channel", .preceding = {"RD32", "RD32A"}, .following = {"RD32", "RD32A"}, .latency = V("nBL32") * 3, .blocked_offset=V("nBL32") * 2},
+          {.level = "channel", .preceding = {"WR32", "WR32A"}, .following = {"WR32", "WR32A"}, .latency = V("nBL32") * 3, .blocked_offset=V("nBL32") * 2},
+          {.level = "channel", .preceding = {"RD32", "RD32A"}, .following = {"RD32", "RD32A"}, .latency = V("nBL32") * 4, .window=2},
+          {.level = "channel", .preceding = {"WR32", "WR32A"}, .following = {"WR32", "WR32A"}, .latency = V("nBL32") * 4, .window=2},
           /*** Rank (or different BankGroup) ***/ 
           // CAS <-> CAS
-          {.level = "rank", .preceding = {"RD16", "RD16A"}, .following = {"RD16", "RD16A"}, .latency = V("nCCD")},
-          {.level = "rank", .preceding = {"WR16", "WR16A"}, .following = {"WR16", "WR16A"}, .latency = V("nCCD")},
+          {.level = "rank", .preceding = {"RD32", "RD32A"}, .following = {"RD32", "RD32A"}, .latency = V("nCCD")},
+          {.level = "rank", .preceding = {"WR32", "WR32A"}, .following = {"WR32", "WR32A"}, .latency = V("nCCD")},
           /// RD <-> WR, Minimum Read to Write, Assuming tWPRE = 1 tCK                          
-          {.level = "rank", .preceding = {"RD16", "RD16A"}, .following = {"WR16", "WR16A"}, .latency = V("nCL") + V("nBL16") + 2 - V("nCWL")},
+          {.level = "rank", .preceding = {"RD32", "RD32A"}, .following = {"WR32", "WR32A"}, .latency = V("nCL") + V("nBL32") + 2 - V("nCWL")},
           /// WR <-> RD, Minimum Read after Write
-          {.level = "rank", .preceding = {"WR16", "WR16A"}, .following = {"RD16", "RD16A"}, .latency = V("nCWL") + V("nBL16") + V("nWTRS")},
+          {.level = "rank", .preceding = {"WR32", "WR32A"}, .following = {"RD32", "RD32A"}, .latency = V("nCWL") + V("nBL32") + V("nWTRS")},
           /// CAS <-> CAS between sibling ranks, nCS (rank switching) is needed for new DQS
-          {.level = "rank", .preceding = {"RD16", "RD16A"}, .following = {"RD16", "RD16A", "WR16", "WR16A"}, .latency = V("nBL16") + V("nCS"), .is_sibling = true},
-          {.level = "rank", .preceding = {"WR16", "WR16A"}, .following = {"RD16", "RD16A"}, .latency = V("nCL")  + V("nBL16") + V("nCS") - V("nCWL"), .is_sibling = true},
+          {.level = "rank", .preceding = {"RD32", "RD32A"}, .following = {"RD32", "RD32A", "WR32", "WR32A"}, .latency = V("nBL32") + V("nCS"), .is_sibling = true},
+          {.level = "rank", .preceding = {"WR32", "WR32A"}, .following = {"RD32", "RD32A"}, .latency = V("nCL")  + V("nBL32") + V("nCS") - V("nCWL"), .is_sibling = true},
           /// CAS <-> PREab
-          {.level = "rank", .preceding = {"RD16"}, .following = {"PREA"}, .latency = V("nRTP")},
-          {.level = "rank", .preceding = {"WR16"}, .following = {"PREA"}, .latency = V("nCWL") + V("nBL16") + V("nWR")},          
+          {.level = "rank", .preceding = {"RD32"}, .following = {"PREA"}, .latency = V("nRTP")},
+          {.level = "rank", .preceding = {"WR32"}, .following = {"PREA"}, .latency = V("nCWL") + V("nBL32") + V("nWR")},          
           /// RAS <-> RAS
           {.level = "rank", .preceding = {"ACT-1"}, .following = {"ACT-1", "REFpb"}, .latency = V("nRRD")},          
           {.level = "rank", .preceding = {"ACT-1"}, .following = {"ACT-1"}, .latency = V("nFAW"), .window = 4},          
@@ -371,29 +376,30 @@ class LPDDR5 : public IDRAM, public Implementation {
           {.level = "rank", .preceding = {"ACT-1"}, .following = {"REFab"}, .latency = V("nRC")},          
           {.level = "rank", .preceding = {"PRE"}, .following = {"REFab"}, .latency = V("nRPpb")},          
           {.level = "rank", .preceding = {"PREA"}, .following = {"REFab"}, .latency = V("nRPab")},          
-          {.level = "rank", .preceding = {"RD16A"}, .following = {"REFab"}, .latency = V("nRPpb") + V("nRTP")},          
-          {.level = "rank", .preceding = {"WR16A"}, .following = {"REFab"}, .latency = V("nCWL") + V("nBL16") + V("nWR") + V("nRPpb")},          
+          {.level = "rank", .preceding = {"RD32A"}, .following = {"REFab"}, .latency = V("nRPpb") + V("nRTP")},          
+          {.level = "rank", .preceding = {"WR32A"}, .following = {"REFab"}, .latency = V("nCWL") + V("nBL32") + V("nWR") + V("nRPpb")},          
           {.level = "rank", .preceding = {"REFab"}, .following = {"REFab", "ACT-1", "REFpb"}, .latency = V("nRFCab")},          
           {.level = "rank", .preceding = {"REFpb"},   .following = {"ACT-1"}, .latency = V("nPBR2ACT")},  
           {.level = "rank", .preceding = {"REFpb"}, .following = {"REFpb"}, .latency = V("nPBR2PBR")},  
 
           /*** Same Bank Group ***/ 
           /// CAS <-> CAS
-          {.level = "bankgroup", .preceding = {"RD16", "RD16A"}, .following = {"RD16", "RD16A"}, .latency = 2 * V("nCCD")},          
-          {.level = "bankgroup", .preceding = {"WR16", "WR16A"}, .following = {"WR16", "WR16A"}, .latency = 2 * V("nCCD")},          
-          {.level = "bankgroup", .preceding = {"WR16", "WR16A"}, .following = {"RD16", "RD16A"}, .latency = V("nCWL") + V("nBL16") + V("nWTRL")},
+          {.level = "bankgroup", .preceding = {"RD32", "RD32A"}, .following = {"RD32", "RD32A"}, .latency = 4 * V("nCCD")},          
+          {.level = "bankgroup", .preceding = {"WR32", "WR32A"}, .following = {"WR32", "WR32A"}, .latency = 4 * V("nCCD")},          
+          {.level = "bankgroup", .preceding = {"WR32", "WR32A"}, .following = {"RD32", "RD32A"}, .latency = V("nCWL") + V("nBL32") + V("nWTRL")},
           /// RAS <-> RAS
           {.level = "bankgroup", .preceding = {"ACT-1"}, .following = {"ACT-1"}, .latency = V("nRRD")},  
 
           /*** Bank ***/ 
           {.level = "bank", .preceding = {"ACT-1"}, .following = {"ACT-1"}, .latency = V("nRC")},  
-          {.level = "bank", .preceding = {"ACT-1"}, .following = {"RD16", "RD16A", "WR16", "WR16A"}, .latency = V("nRCD")},  
+          {.level = "bank", .preceding = {"ACT-1"}, .following = {"RD32", "RD32A"}, .latency = V("nRCDR")},  
+          {.level = "bank", .preceding = {"ACT-1"}, .following = {"WR32", "WR32A"}, .latency = V("nRCDW")},
           {.level = "bank", .preceding = {"ACT-1"}, .following = {"PRE"}, .latency = V("nRAS")},  
           {.level = "bank", .preceding = {"PRE"}, .following = {"ACT-1"}, .latency = V("nRPpb")},  
-          {.level = "bank", .preceding = {"RD16"},  .following = {"PRE"}, .latency = V("nRTP")},  
-          {.level = "bank", .preceding = {"WR16"},  .following = {"PRE"}, .latency = V("nCWL") + V("nBL16") + V("nWR")},  
-          {.level = "bank", .preceding = {"RD16A"}, .following = {"ACT-1"}, .latency = V("nRTP") + V("nRPpb")},  
-          {.level = "bank", .preceding = {"WR16A"}, .following = {"ACT-1"}, .latency = V("nCWL") + V("nBL16") + V("nWR") + V("nRPpb")},  
+          {.level = "bank", .preceding = {"RD32"},  .following = {"PRE"}, .latency = V("nRTP")},  
+          {.level = "bank", .preceding = {"WR32"},  .following = {"PRE"}, .latency = V("nCWL") + V("nBL32") + V("nWR")},  
+          {.level = "bank", .preceding = {"RD32A"}, .following = {"ACT-1"}, .latency = V("nRTP") + V("nRPpb")},  
+          {.level = "bank", .preceding = {"WR32A"}, .following = {"ACT-1"}, .latency = V("nCWL") + V("nBL32") + V("nWR") + V("nRPpb")},  
         }
       );
       #undef V
@@ -404,36 +410,36 @@ class LPDDR5 : public IDRAM, public Implementation {
       m_actions.resize(m_levels.size(), std::vector<ActionFunc_t<Node>>(m_commands.size()));
 
       // Rank Actions
-      m_actions[m_levels["rank"]][m_commands["PREA"]] = Lambdas::Action::Rank::PREab<LPDDR5>;
+      m_actions[m_levels["rank"]][m_commands["PREA"]] = Lambdas::Action::Rank::PREab<LPDDR5X>;
       m_actions[m_levels["rank"]][m_commands["CASRD"]] = [this] (Node* node, int cmd, int target_id, Clk_t clk) {
-        node->m_final_synced_cycle = clk + m_timing_vals("nCL") + m_timing_vals("nBL16") + 1; 
+        node->m_final_synced_cycle = clk + m_timing_vals("nCL") + m_timing_vals("nBL32") + 1; 
       };
       m_actions[m_levels["rank"]][m_commands["CASWR"]] = [this] (Node* node, int cmd, int target_id, Clk_t clk) {
-        node->m_final_synced_cycle = clk + m_timing_vals("nCWL") + m_timing_vals("nBL16") + 1; 
+        node->m_final_synced_cycle = clk + m_timing_vals("nCWL") + m_timing_vals("nBL32") + 1; 
       };
-      m_actions[m_levels["rank"]][m_commands["RD16"]] = [this] (Node* node, int cmd, int target_id, Clk_t clk) {
-        node->m_final_synced_cycle = clk + m_timing_vals("nCL") + m_timing_vals("nBL16"); 
+      m_actions[m_levels["rank"]][m_commands["RD32"]] = [this] (Node* node, int cmd, int target_id, Clk_t clk) {
+        node->m_final_synced_cycle = clk + m_timing_vals("nCL") + m_timing_vals("nBL32"); 
       };
-      m_actions[m_levels["rank"]][m_commands["WR16"]] = [this] (Node* node, int cmd, int target_id, Clk_t clk) {
-        node->m_final_synced_cycle = clk + m_timing_vals("nCWL") + m_timing_vals("nBL16"); 
+      m_actions[m_levels["rank"]][m_commands["WR32"]] = [this] (Node* node, int cmd, int target_id, Clk_t clk) {
+        node->m_final_synced_cycle = clk + m_timing_vals("nCWL") + m_timing_vals("nBL32"); 
       };
       // Bank actions
       m_actions[m_levels["bank"]][m_commands["ACT-1"]] = [] (Node* node, int cmd, int target_id, Clk_t clk) {
         node->m_state = m_states["Pre-Opened"];
         node->m_row_state[target_id] = m_states["Pre-Opened"];
       };
-      m_actions[m_levels["bank"]][m_commands["ACT-2"]] = Lambdas::Action::Bank::ACT<LPDDR5>;
-      m_actions[m_levels["bank"]][m_commands["PRE"]]   = Lambdas::Action::Bank::PRE<LPDDR5>;
-      m_actions[m_levels["bank"]][m_commands["RD16A"]] = Lambdas::Action::Bank::PRE<LPDDR5>;
-      m_actions[m_levels["bank"]][m_commands["WR16A"]] = Lambdas::Action::Bank::PRE<LPDDR5>;
+      m_actions[m_levels["bank"]][m_commands["ACT-2"]] = Lambdas::Action::Bank::ACT<LPDDR5X>;
+      m_actions[m_levels["bank"]][m_commands["PRE"]]   = Lambdas::Action::Bank::PRE<LPDDR5X>;
+      m_actions[m_levels["bank"]][m_commands["RD32A"]] = Lambdas::Action::Bank::PRE<LPDDR5X>;
+      m_actions[m_levels["bank"]][m_commands["WR32A"]] = Lambdas::Action::Bank::PRE<LPDDR5X>;
     };
 
     void set_preqs() {
       m_preqs.resize(m_levels.size(), std::vector<PreqFunc_t<Node>>(m_commands.size()));
 
       // Rank Preqs
-      m_preqs[m_levels["rank"]][m_commands["REFab"]] = Lambdas::Preq::Rank::RequireAllBanksClosed<LPDDR5>;
-      m_preqs[m_levels["rank"]][m_commands["RFMab"]] = Lambdas::Preq::Rank::RequireAllBanksClosed<LPDDR5>;
+      m_preqs[m_levels["rank"]][m_commands["REFab"]] = Lambdas::Preq::Rank::RequireAllBanksClosed<LPDDR5X>;
+      m_preqs[m_levels["rank"]][m_commands["RFMab"]] = Lambdas::Preq::Rank::RequireAllBanksClosed<LPDDR5X>;
 
       m_preqs[m_levels["rank"]][m_commands["REFpb"]] = [this] (Node* node, int cmd, int target_id, Clk_t clk) {
         int target_bank_id = target_id;
@@ -458,7 +464,7 @@ class LPDDR5 : public IDRAM, public Implementation {
       m_preqs[m_levels["rank"]][m_commands["RFMpb"]] = m_preqs[m_levels["rank"]][m_commands["REFpb"]];
 
       // Bank Preqs
-      m_preqs[m_levels["bank"]][m_commands["RD16"]] = [] (Node* node, int cmd, int target_id, Clk_t clk) {
+      m_preqs[m_levels["bank"]][m_commands["RD32"]] = [] (Node* node, int cmd, int target_id, Clk_t clk) {
         switch (node->m_state) {
           case m_states["Closed"]: return m_commands["ACT-1"];
           case m_states["Pre-Opened"]: return m_commands["ACT-2"];
@@ -480,7 +486,7 @@ class LPDDR5 : public IDRAM, public Implementation {
           } 
         }
       };
-      m_preqs[m_levels["bank"]][m_commands["WR16"]] = [] (Node* node, int cmd, int target_id, Clk_t clk) {
+      m_preqs[m_levels["bank"]][m_commands["WR32"]] = [] (Node* node, int cmd, int target_id, Clk_t clk) {
         switch (node->m_state) {
           case m_states["Closed"]: return m_commands["ACT-1"];
           case m_states["Pre-Opened"]: return m_commands["ACT-2"];
@@ -523,8 +529,8 @@ class LPDDR5 : public IDRAM, public Implementation {
           }
         }
       };
-      m_rowhits[m_levels["bank"]][m_commands["RD16"]] = rowhit_func;
-      m_rowhits[m_levels["bank"]][m_commands["WR16"]] = rowhit_func;
+      m_rowhits[m_levels["bank"]][m_commands["RD32"]] = rowhit_func;
+      m_rowhits[m_levels["bank"]][m_commands["WR32"]] = rowhit_func;
     }
 
 
@@ -541,8 +547,8 @@ class LPDDR5 : public IDRAM, public Implementation {
           }
         }
       };
-      m_rowopens[m_levels["bank"]][m_commands["RD16"]] = rowopen_func;
-      m_rowopens[m_levels["bank"]][m_commands["WR16"]] = rowopen_func;
+      m_rowopens[m_levels["bank"]][m_commands["RD32"]] = rowopen_func;
+      m_rowopens[m_levels["bank"]][m_commands["WR32"]] = rowopen_func;
     }
 
 
