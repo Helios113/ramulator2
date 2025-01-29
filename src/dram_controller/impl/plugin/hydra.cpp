@@ -4,6 +4,7 @@
 #include <bitset>
 #include <iomanip>
 #include <random>
+#include <climits>
 
 #include "base/base.h"
 #include "frontend/frontend.h"

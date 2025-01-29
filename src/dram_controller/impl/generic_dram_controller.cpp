@@ -111,6 +111,18 @@ class GenericDRAMController final : public IDRAMController, public Implementatio
 
       // 4. Finally, issue the commands to serve the request
       if (request_found) {
+        if(req_it->is_first) {
+          req_it->is_first = false;
+          bool row_hit = m_dram->check_rowbuffer_hit(req_it->final_command, req_it->addr_vec);
+          bool row_open = m_dram->check_rowbuffer_open(req_it->final_command, req_it->addr_vec);
+          if (row_hit) {
+            s_num_row_hits++;
+          } else if (row_open) {
+            s_num_row_conflicts++;
+          } else {
+            s_num_row_misses++;
+          }
+        }
         // If we find a real request to serve
         m_dram->issue_command(req_it->command, req_it->addr_vec);
 
@@ -121,6 +133,8 @@ class GenericDRAMController final : public IDRAMController, public Implementatio
             pending.push_back(*req_it);
           } else if (req_it->type_id == Request::Type::Write) {
             // TODO: Add code to update statistics
+            if(req_it->callback)
+              req_it->callback(*req_it);
           }
           buffer->remove(req_it);
         } else {
@@ -134,7 +148,9 @@ class GenericDRAMController final : public IDRAMController, public Implementatio
 
     };
 
-
+    void finalize() override {
+      spdlog::info("Row hits: {}, Row misses: {}, Row conflicts: {}", s_num_row_hits, s_num_row_misses, s_num_row_conflicts);
+    }
   private:
     /**
      * @brief    Helper function to serve the completed read requests

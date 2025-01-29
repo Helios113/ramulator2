@@ -92,6 +92,33 @@ class RoBaRaCoCh final : public LinearMapperBase, public Implementation {
     }
 };
 
+class M2NDP final : public LinearMapperBase, public Implementation {
+  RAMULATOR_REGISTER_IMPLEMENTATION(
+      IAddrMapper, M2NDP, "M2NDP",
+      "Applies a RoBaRaCoCh mapping to the address.");
+
+ public:
+  void init() override{};
+
+  void setup(IFrontEnd* frontend, IMemorySystem* memory_system) override {
+    LinearMapperBase::setup(frontend, memory_system);
+  }
+
+  void apply(Request& req) override {
+    req.addr_vec.resize(m_num_levels, -1);
+    Addr_t addr = req.addr >> m_tx_offset;
+    int c_index = m_addr_bits.size() - 1;
+    int c_lower = 8 - m_tx_offset;
+    int c_higher = m_addr_bits[c_index] - c_lower;
+    req.addr_vec[0] = slice_lower_bits(addr, m_addr_bits[0]);
+    int c_lower_addr = slice_lower_bits(addr, c_lower);
+    req.addr_vec[1] = slice_lower_bits(addr, m_addr_bits[1]);
+    req.addr_vec[c_index] = (slice_lower_bits(addr, c_higher) << c_lower) + c_lower_addr;
+    for (int i = 2; i <= m_row_bits_idx; i++) {
+      req.addr_vec[i] = slice_lower_bits(addr, m_addr_bits[i]);
+    }
+  }
+};
 
 class MOP4CLXOR final : public LinearMapperBase, public Implementation {
   RAMULATOR_REGISTER_IMPLEMENTATION(IAddrMapper, MOP4CLXOR, "MOP4CLXOR", "Applies a MOP4CLXOR mapping to the address.");

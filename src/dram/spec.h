@@ -43,11 +43,13 @@ struct TimingConsEntry {
   int val;
   /// How long of a history to keep track of?
   int window = 1;
+  /// The offset of the blocked command.
+  int blocked_offset = -1;
   /// Whether this timing constraint is affecting siblings in the same level.
   bool sibling = false;
-
-  TimingConsEntry(int cmd, int val, int window = 1, bool sibling = false):
-  cmd(cmd), val(val), window(window), sibling(sibling) {
+  
+  TimingConsEntry(int cmd, int val, int window = 1, int blocked_offset = -1, bool sibling = false):
+  cmd(cmd), val(val), window(window), blocked_offset(blocked_offset), sibling(sibling) {
     if (this->window < 0) {
       spdlog::warn("[DRAM Spec] Timing constraint value smaller than 0!");
       this->window = 0;
@@ -71,6 +73,7 @@ struct TimingConsInitializer {
   std::vector<std::string_view> following;
   int latency = -1;
   int window = 1;
+  int blocked_offset = -1;
   bool is_sibling = false;
 };
 
@@ -83,7 +86,7 @@ void populate_timingcons(T* spec, std::vector<TimingConsInitializer> initializer
       int p_cmd = T::m_commands(p_cmd_str);
       for (auto f_cmd_str : ts.following) {
         int f_cmd = T::m_commands(f_cmd_str);
-        spec->m_timing_cons[level][p_cmd].push_back({f_cmd, ts.latency, ts.window, ts.is_sibling});
+        spec->m_timing_cons[level][p_cmd].push_back({f_cmd, ts.latency, ts.window, ts.blocked_offset, ts.is_sibling});
       }
     }
   }

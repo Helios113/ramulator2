@@ -25,6 +25,7 @@ struct Request {
   int type_id = -1;    // An identifier for the type of the request
   int source_id = -1;  // An identifier for where the request is coming from (e.g., which core)
 
+  bool is_first = true;      // Whether this is the first command of the request
   int command = -1;          // The command that need to be issued to progress the request
   int final_command = -1;    // The final command that is needed to finish the request
 
@@ -40,11 +41,11 @@ struct Request {
 
 
 struct ReqBuffer {
-  std::list<Request> buffer;
-  size_t max_size = 32;
+  std::vector<Request> buffer;
+  size_t max_size = 64;
 
 
-  using iterator = std::list<Request>::iterator;
+  using iterator = std::vector<Request>::iterator;
   iterator begin() { return buffer.begin(); };
   iterator end() { return buffer.end(); };
 
