@@ -28,11 +28,16 @@ struct Request {
   bool is_first = true;      // Whether this is the first command of the request
   int command = -1;          // The command that need to be issued to progress the request
   int final_command = -1;    // The final command that is needed to finish the request
+  bool is_stat_updated = false; // Memory controller stats
 
   Clk_t arrive = -1;   // Clock cycle when the request arrive at the memory controller
   Clk_t depart = -1;   // Clock cycle when the request depart the memory controller
 
+  std::array<int, 4> scratchpad = { 0 };    // A scratchpad for the request
+
   std::function<void(Request&)> callback;
+
+  void* m_payload = nullptr;    // Point to a generic payload
 
   Request(Addr_t addr, int type);
   Request(AddrVec_t addr_vec, int type);
